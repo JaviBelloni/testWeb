@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Admin - Generar HTML</title>
+  <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Panel Admin</h1>
+    <p>Presiona el botón para leer <code>products.csv</code> y generar el HTML del catálogo.</p>
+    <button id="generate" class="btn">Generar HTML</button>
+    <textarea id="output" style="width:100%;height:400px;margin-top:16px"></textarea>
+  </div>
+
+<script>
+function parseCSV(text){
+  const [headerLine, ...lines] = text.trim().split("\n")
+  const headers = headerLine.split(",")
+  return lines.map(l=>{
+    const cols = l.split(",")
+    let obj = {}
+    headers.forEach((h,i)=> obj[h.trim()] = cols[i]?.trim() )
+    obj.price = parseFloat(obj.price||0)
+    return obj
+  })
+}
+
+document.getElementById("generate").addEventListener("click", async ()=>{
+  const res = await fetch("data/products.csv")
+  const text = await res.text()
+  const products = parseCSV(text)
+
+  let html = ""
+  products.forEach(p=>{
+    html += `
+<article class="card" data-name="${p.name}" data-price="${p.price}">
+  <img src="static/images/${p.image}" alt="${p.name}">
+  <div class="meta">
+    <div class="title">${p.name}</div>
+    <div style="font-size:13px; color:var(--muted)">${p.category}</div>
+    <div style="font-size:13px; color:#444">${p.description}</div>
+    <div class="price">$${p.price.toFixed(2)}</div>
+  </div>
+</article>\n`
+  })
+  document.getElementById("output").value = html
+})
+</script>
+</body>
+</html>

@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Accesorios Mujer - Catálogo</title>
+  <link rel="stylesheet" href="static/css/styles.css">
+</head>
+<body>
+  <header class="header">
+    <div class="container">
+      <div class="brand">
+        <div class="logo">A</div>
+        <div>
+          <div class="site-title">Accesorios Mujer</div>
+          <div style="color:var(--muted); font-size:13px">Catálogo cargado desde CSV</div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="padding-top:18px">
+    <div class="controls">
+      <input id="search" class="search" placeholder="Buscar..." style="flex:1" />
+      <select id="sort" class="select">
+        <option value="none">Ordenar</option>
+        <option value="price_asc">Precio ↑</option>
+        <option value="price_desc">Precio ↓</option>
+        <option value="name_asc">Nombre A→Z</option>
+      </select>
+    </div>
+
+    <div id="catalog" class="grid"></div>
+  </main>
+
+<script>
+function parseCSV(text){
+  const [headerLine, ...lines] = text.trim().split("\n")
+  const headers = headerLine.split(",")
+  return lines.map(l=>{
+    const cols = l.split(",")
+    let obj = {}
+    headers.forEach((h,i)=> obj[h.trim()] = cols[i]?.trim() )
+    obj.price = parseFloat(obj.price||0)
+    return obj
+  })
+}
+
+async function loadCatalog(){
+  const res = await fetch("data/products.csv")
+  const text = await res.text()
+  const products = parseCSV(text)
+
+  const container = document.getElementById("catalog")
+  container.innerHTML = ""
+
+  products.forEach(p=>{
+    const card = document.createElement("article")
+    card.className = "card"
+    card.dataset.name = p.name
+    card.dataset.price = p.price
+    card.innerHTML = `
+      <img src="static/images/${p.image}" alt="${p.name}">
+      <div class="meta">
+        <div class="title">${p.name}</div>
+        <div style="font-size:13px; color:var(--muted)">${p.category}</div>
+        <div style="font-size:13px; color:#444">${p.description}</div>
+        <div class="price">$${p.price.toFixed(2)}</div>
+      </div>`
+    container.appendChild(card)
+  })
+}
+
+loadCatalog()
+</script>
+</body>
+</html>

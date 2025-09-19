@@ -67,6 +67,7 @@ async function loadCatalog(){
         <div style="font-size:13px; color:#444">${p.description}</div>
         <div class="price">$${p.price.toFixed(2)}</div>
       </div>`
+    card.addEventListener("click", () => openOverlay(p));
     container.appendChild(card)
   })
 }

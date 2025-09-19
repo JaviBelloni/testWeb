@@ -1,8 +1,19 @@
 id,name,category,description,price,image
-1,Bolso de Cuero,Bolsos,Bolso elegante en cuero sintético.,80.00,bolso.jpg
-2,Collar Dorado,Joyería,Collar minimalista dorado con dije.,25.00,collar.jpg
-3,Sombrero de Verano,Sombreros,Sombrero ligero ideal para el sol.,35.00,sombrero.jpg
-4,Bufanda Roja,Accesorios,Bufanda de lana roja tejida.,20.00,bufanda.jpg
-5,Cinturón Negro,Cinturones,Cinturón clásico de cuero negro.,22.00,cinturon.jpg
-6,javi,Bolsos,test editado,28.00,factura_lavavajilla.jpg
+1,Box de Somier,Habitación,2 bases para somier de NxN,99.99,sinImagen.jpg
+2,Sillones individuales,Sillones,2 silloncitos,99.99,sinImagen.jpg
+3,Sillon,Sillones,Sillon living,99.99,sinImagen.jpg
+4,Rack TV,Living,Rack TV Wengue,99.99,sinImagen.jpg
+5,Mesa comedor,Living,Mesa de comedor con 4 sillas,99.99,sinImagen.jpg
+6,Comoda,Habitación,Comoda blanca laqueada,99.99,sinImagen.jpg
+7,Mesa de luz,Habitación,Mesa de luz blanca laqueada,99.99,sinImagen.jpg
+8,Combo Comoda + Mesa de luz,Habitación,...,99.99,sinImagen.jpg
+9,Perchero,Habitacion,Perchero cromado,99.99,sinImagen.jpg
+10,Lampara Dino,Habitación,Lamapara de Dino,99.99,sinImagen.jpg
+11,Bolso de Cuero,Bolsos,Bolso elegante en cuero sintético.,80.00,bolso.jpg
+12,Collar Dorado,Joyería,Collar minimalista dorado con dije.,25.00,collar.jpg
+13,Sombrero de Verano,Sombreros,Sombrero ligero ideal para el sol.,35.00,sombrero.jpg
+14,Bufanda Roja,Accesorios,Bufanda de lana roja tejida.,20.00,bufanda.jpg
+15,Cinturón Negro,Cinturones,Cinturón clásico de cuero negro.,22.00,cinturon.jpg
+16,javi,Bolsos,test editado,28.00,factura_lavavajilla.jpg
+
 

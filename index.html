@@ -1,110 +1,154 @@
 <!doctype html>
 <html lang="es">
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Vendo Todo - Javi Belloni</title>
-  <link rel="stylesheet" href="static/css/styles.css">
-</head>
-<body>
-  <header class="header">
-    <div class="container">
-      <div class="brand">
-        <div class="logo">JB</div>
-        <div>
-          <div class="site-title">Vendo Todo</div>
-          <div style="color:var(--muted); font-size:13px">Si te interesa algo, me mandas mensaje</div>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Vendo Todo - Javi Belloni</title>
+    <link rel="stylesheet" href="static/css/styles.css">
+  </head>
+  <body>
+    <header class="header">
+      <div class="container">
+        <div class="brand">
+          <div class="logo">JB</div>
+          <div>
+            <div class="site-title">Vendo Todo</div>
+            <div style="color:var(--muted); font-size:13px">Si te interesa algo, me mandas mensaje</div>
+          </div>
         </div>
       </div>
-    </div>
-  </header>
-
-  <main class="container" style="padding-top:18px">
-    <div class="controls">
-      <input id="search" class="search" placeholder="Buscar..." style="flex:1" />
-      <select id="sort" class="select">
-        <option value="none">Ordenar</option>
-        <option value="price_asc">Precio ↑</option>
-        <option value="price_desc">Precio ↓</option>
-        <option value="name_asc">Nombre A→Z</option>
-      </select>
-    </div>
-
-    <div id="catalog" class="grid"></div>
-  </main>
-
-<script>
-function parseCSV(text){
-  const [headerLine, ...lines] = text.trim().split("\n")
-  const headers = headerLine.split(",")
-  return lines.map(l=>{
-    const cols = l.split(",")
-    let obj = {}
-    headers.forEach((h,i)=> obj[h.trim()] = cols[i]?.trim() )
-    obj.price = parseFloat(obj.price||0)
-    return obj
-  })
-}
-
-async function loadCatalog(){
-  const res = await fetch("data/products.csv")
-  const text = await res.text()
-  const products = parseCSV(text)
-
-  const container = document.getElementById("catalog")
-  container.innerHTML = ""
-
-  products.forEach(p=>{
-    const card = document.createElement("article")
-    card.className = "card"
-    card.dataset.name = p.name
-    card.dataset.price = p.price
-    card.innerHTML = `
-      <img src="static/images/${p.image}" alt="${p.name}">
-      <div class="meta">
-        <div class="title">${p.name}</div>
-        <div style="font-size:13px; color:var(--muted)">${p.category}</div>
-        <div style="font-size:13px; color:#444">${p.description}</div>
-        <div class="price">$${p.price.toFixed(2)}</div>
-      </div>`
-    card.addEventListener("click", () => openOverlay(p));
-    container.appendChild(card)
-  })
-}
-
-loadCatalog()
-</script>
-
-  <!-- Overlay de producto -->
-  <div id="productOverlay" class="overlay">
-    <div class="overlay-content">
-      <span class="close-btn" onclick="closeOverlay()">&times;</span>
-      
-      <!-- Carrusel -->
-      <div class="carousel">
-        <button class="prev-btn" onclick="changeSlide(-1)">&#10094;</button>
-        <div class="carousel-images" id="carouselImages"></div>
-        <button class="next-btn" onclick="changeSlide(1)">&#10095;</button>
+    </header>
+  
+    <main class="container" style="padding-top:18px">
+      <div class="controls">
+        <input id="search" class="search" placeholder="Buscar..." style="flex:1" />
+        <select id="sort" class="select">
+          <option value="none">Ordenar</option>
+          <option value="price_asc">Precio ↑</option>
+          <option value="price_desc">Precio ↓</option>
+          <option value="name_asc">Nombre A→Z</option>
+        </select>
       </div>
   
-      <h2 id="overlayName"></h2>
-      <p id="overlayDescription"></p>
-      <p id="overlayPrice"></p>
+      <div id="catalog" class="grid"></div>
+    </main>
+  
+  <script>
+  function parseCSV(text){
+    const [headerLine, ...lines] = text.trim().split("\n")
+    const headers = headerLine.split(",")
+    return lines.map(l=>{
+      const cols = l.split(",")
+      let obj = {}
+      headers.forEach((h,i)=> obj[h.trim()] = cols[i]?.trim() )
+      obj.price = parseFloat(obj.price||0)
+      return obj
+    })
+  }
+  
+  async function loadCatalog(){
+    const res = await fetch("data/products.csv")
+    const text = await res.text()
+    const products = parseCSV(text)
+  
+    const container = document.getElementById("catalog")
+    container.innerHTML = ""
+  
+    products.forEach(p=>{
+      const card = document.createElement("article")
+      card.className = "card"
+      card.dataset.name = p.name
+      card.dataset.price = p.price
+      card.innerHTML = `
+        <img src="static/images/${p.image}" alt="${p.name}">
+        <div class="meta">
+          <div class="title">${p.name}</div>
+          <div style="font-size:13px; color:var(--muted)">${p.category}</div>
+          <div style="font-size:13px; color:#444">${p.description}</div>
+          <div class="price">$${p.price.toFixed(2)}</div>
+        </div>`
+      card.addEventListener("click", () => openOverlay(p));
+      container.appendChild(card)
+    })
+  }
+  
+  loadCatalog()
+  </script>
+  
+    <!-- Overlay de producto -->
+    <div id="productOverlay" class="overlay">
+      <div class="overlay-content">
+        <span class="close-btn" onclick="closeOverlay()">&times;</span>
+        
+        <!-- Carrusel -->
+        <div class="carousel">
+          <button class="prev-btn" onclick="changeSlide(-1)">&#10094;</button>
+          <div class="carousel-images" id="carouselImages"></div>
+          <button class="next-btn" onclick="changeSlide(1)">&#10095;</button>
+        </div>
+    
+        <h2 id="overlayName"></h2>
+        <p id="overlayDescription"></p>
+        <p id="overlayPrice"></p>
+      </div>
     </div>
-  </div>
-</body>
+  </body>
+  
+  <script>
+let currentSlide = 0;
+let totalSlides = 0;
 
-    <script>
-    function openOverlay(product) {
-      document.getElementById("overlayImage").src = "static/images/" + product.image;
-      document.getElementById("overlayName").textContent = product.name;
-      document.getElementById("overlayDescription").textContent = product.description;
-      document.getElementById("overlayPrice").textContent = "Precio: $" + product.price;
-      document.getElementById("productOverlay").style.display = "flex";
+  async function loadProductImages(baseImage) {
+    const container = document.getElementById("carouselImages");
+    container.innerHTML = "";
+  
+    // Agregar imagen base
+    const img = document.createElement("img");
+    img.src = baseImage;
+    img.classList.add("active");
+    container.appendChild(img);
+    totalSlides = 1;
+  
+    // Probar imágenes adicionales: base-1, base-2, ...
+    let index = 1;
+    while (true) {
+      const newImg = document.createElement("img");
+      let extension = baseImage.substring(baseImage.lastIndexOf("."));
+      let name = baseImage.substring(0, baseImage.lastIndexOf("."));
+      newImg.src = `${name}-${index}${extension}`;
+  
+      try {
+        await fetch(newImg.src, { method: "HEAD" });
+        container.appendChild(newImg);
+        totalSlides++;
+        index++;
+      } catch {
+        break; // cuando no exista más imagen
+      }
     }
-
-    function closeOverlay() {
-      document.getElementById("productOverlay").style.display = "none";
-    }
-    </script>
-    </html>
+    currentSlide = 0;
+  }
+  
+  function openOverlay(product) {
+    document.getElementById("overlayName").textContent = product.name;
+    document.getElementById("overlayDescription").textContent = product.description;
+    document.getElementById("overlayPrice").textContent = "Precio: $" + product.price;
+  
+    loadProductImages(product.image);
+    document.getElementById("productOverlay").style.display = "flex";
+  }
+  
+  function closeOverlay() {
+    document.getElementById("productOverlay").style.display = "none";
+  }
+  
+  function changeSlide(step) {
+    const images = document.querySelectorAll("#carouselImages img");
+    if (images.length === 0) return;
+  
+    images[currentSlide].classList.remove("active");
+    currentSlide = (currentSlide + step + totalSlides) % totalSlides;
+    images[currentSlide].classList.add("active");
+  }
+  </script>
+</html>

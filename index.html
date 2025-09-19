@@ -134,7 +134,7 @@ let totalSlides = 0;
     document.getElementById("overlayDescription").textContent = product.description;
     document.getElementById("overlayPrice").textContent = "Precio: $" + product.price;
   
-    loadProductImages(product.image);
+    loadProductImages("static/images/" + product.image);
     document.getElementById("productOverlay").style.display = "flex";
   }
   

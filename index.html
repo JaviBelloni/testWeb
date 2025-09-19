@@ -93,62 +93,122 @@
       </div>
     </div>
   </body>
-  
   <script>
+let overlayLoadToken = 0;
 let currentSlide = 0;
-let totalSlides = 0;
 
-  async function loadProductImages(baseImage) {
-    const container = document.getElementById("carouselImages");
-    container.innerHTML = "";
-  
-    // Agregar imagen base
-    const img = document.createElement("img");
-    img.src = baseImage;
-    img.classList.add("active");
-    container.appendChild(img);
-    totalSlides = 1;
-  
-    // Probar imágenes adicionales: base-1, base-2, ...
-    let index = 1;
-    while (true) {
-      const newImg = document.createElement("img");
-      let extension = baseImage.substring(baseImage.lastIndexOf("."));
-      let name = baseImage.substring(0, baseImage.lastIndexOf("."));
-      newImg.src = `${name}-${index}${extension}`;
-  
-      try {
-        await fetch(newImg.src, { method: "HEAD" });
-        container.appendChild(newImg);
-        totalSlides++;
-        index++;
-      } catch {
-        break; // cuando no exista más imagen
+async function checkImageExists(url) {
+  try {
+    const res = await fetch(url, { method: 'HEAD' });
+    return res.ok;
+  } catch (e) {
+    return false;
+  }
+}
+
+function resolveImagePath(file) {
+  if (!file) return file;
+  if (file.startsWith('http') || file.startsWith('/') || file.includes('/')) return file;
+  return 'static/images/' + file;
+}
+
+async function loadProductImages(baseImage, token) {
+  const container = document.getElementById('carouselImages');
+  container.innerHTML = '<div class="loading">Cargando imágenes...</div>';
+  if (!baseImage) { container.innerHTML = '<div class="empty">Sin imagen</div>'; return; }
+
+  const m = baseImage.match(/^(.*?)(-\d+)?(\.[^.]+)$/);
+  if (!m) { container.innerHTML = '<div class="empty">Formato inválido</div>'; return; }
+  const baseName = m[1];
+  const ext = m[3];
+
+  const imagesFound = [];
+  const basePath = resolveImagePath(baseImage);
+  if (token !== overlayLoadToken) return;
+  if (await checkImageExists(basePath)) {
+    imagesFound.push(basePath);
+  } else {
+    const alt = resolveImagePath(baseName + '-1' + ext);
+    if (token !== overlayLoadToken) return;
+    if (await checkImageExists(alt)) imagesFound.push(alt);
+  }
+
+  const maxExtra = 15;
+  for (let i = 1; i <= maxExtra; i++) {
+    if (token !== overlayLoadToken) return;
+    const candidate = resolveImagePath(baseName + '-' + i + ext);
+    try {
+      const exists = await checkImageExists(candidate);
+      if (exists) {
+        if (!imagesFound.includes(candidate)) imagesFound.push(candidate);
+      } else {
+        break; // paramos en el primer no-encontrado
       }
+    } catch (e) {
+      break;
     }
-    currentSlide = 0;
   }
-  
-  function openOverlay(product) {
-    document.getElementById("overlayName").textContent = product.name;
-    document.getElementById("overlayDescription").textContent = product.description;
-    document.getElementById("overlayPrice").textContent = "Precio: $" + product.price;
-  
-    loadProductImages("static/images/" + product.image);
-    document.getElementById("productOverlay").style.display = "flex";
+
+  container.innerHTML = '';
+  if (imagesFound.length === 0) {
+    container.innerHTML = '<div class="empty">No hay imágenes</div>';
+    return;
   }
-  
-  function closeOverlay() {
-    document.getElementById("productOverlay").style.display = "none";
+
+  imagesFound.forEach((src, idx) => {
+    const img = document.createElement('img');
+    img.src = src;
+    if (idx === 0) img.classList.add('active');
+    container.appendChild(img);
+  });
+
+  currentSlide = 0;
+  document.getElementById('prevBtn').style.display = imagesFound.length > 1 ? 'block' : 'none';
+  document.getElementById('nextBtn').style.display = imagesFound.length > 1 ? 'block' : 'none';
+}
+
+async function openOverlay(product) {
+  const token = ++overlayLoadToken;
+  document.getElementById('overlayName').textContent = product.name || '';
+  document.getElementById('overlayDescription').textContent = product.description || '';
+  document.getElementById('overlayPrice').textContent = product.price ? ('Precio: $' + product.price) : '';
+  document.getElementById('productOverlay').style.display = 'flex';
+  await loadProductImages(product.image, token);
+}
+
+function closeOverlay() {
+  overlayLoadToken++; // invalida cargas pendientes
+  document.getElementById('productOverlay').style.display = 'none';
+  document.getElementById('carouselImages').innerHTML = '';
+}
+
+function changeSlide(step) {
+  const imgs = document.querySelectorAll('#carouselImages img');
+  if (!imgs || imgs.length === 0) return;
+  imgs[currentSlide].classList.remove('active');
+  currentSlide = (currentSlide + step + imgs.length) % imgs.length;
+  imgs[currentSlide].classList.add('active');
+}
+
+// Delegación: clic en la tarjeta abre el overlay
+document.addEventListener('click', function(ev) {
+  const card = ev.target.closest && ev.target.closest('.card');
+  if (card && document.getElementById('catalog') && document.getElementById('catalog').contains(card)) {
+    const imgEl = card.querySelector('img');
+    const imageSrc = imgEl ? imgEl.getAttribute('src') : (card.dataset.image || '');
+    const name = card.dataset.name || (card.querySelector('.title') && card.querySelector('.title').textContent.trim()) || '';
+    const descNode = card.querySelector('.meta > div:nth-child(3)');
+    const description = descNode ? descNode.textContent.trim() : (card.dataset.description || '');
+    const price = card.dataset.price || (card.querySelector('.price') && card.querySelector('.price').textContent.replace('$','').trim()) || '';
+    openOverlay({ image: imageSrc, name: name, description: description, price: price });
+    return;
   }
-  
-  function changeSlide(step) {
-    const images = document.querySelectorAll("#carouselImages img");
-    if (images.length === 0) return;
-  
-    images[currentSlide].classList.remove("active");
-    currentSlide = (currentSlide + step + totalSlides) % totalSlides;
-    images[currentSlide].classList.add("active");
-  }
-  </script>
+
+  if (ev.target && ev.target.id === 'prevBtn') { ev.preventDefault(); changeSlide(-1); return; }
+  if (ev.target && ev.target.id === 'nextBtn') { ev.preventDefault(); changeSlide(1); return; }
+  if (ev.target && ev.target.id === 'overlayClose') { closeOverlay(); return; }
+  if (ev.target && ev.target.id === 'productOverlay') { closeOverlay(); return; }
+});
+</script>
+
 </html>

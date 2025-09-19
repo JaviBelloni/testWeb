@@ -213,6 +213,12 @@ document.addEventListener('click', function(ev) {
   if (ev.target && ev.target.id === 'overlayClose') { closeOverlay(); return; }
   if (ev.target && ev.target.id === 'productOverlay') { closeOverlay(); return; }
 });
+
+const phone = "5491165031891"; // Número de WhatsApp
+const message = "Hola, quiero más información.";
+const link = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+document.querySelector(".whatsapp-button").setAttribute("href", link);
+    
 </script>
 
 </html>

@@ -73,5 +73,30 @@ async function loadCatalog(){
 
 loadCatalog()
 </script>
-</body>
-</html>
+
+    <!-- Overlay de producto -->
+    <div id="productOverlay" class="overlay">
+      <div class="overlay-content">
+        <span class="close-btn" onclick="closeOverlay()">&times;</span>
+        <img id="overlayImage" src="" alt="Producto">
+        <h2 id="overlayName"></h2>
+        <p id="overlayDescription"></p>
+        <p id="overlayPrice"></p>
+      </div>
+    </div>
+    </body>
+
+    <script>
+    function openOverlay(product) {
+      document.getElementById("overlayImage").src = product.image;
+      document.getElementById("overlayName").textContent = product.name;
+      document.getElementById("overlayDescription").textContent = product.description;
+      document.getElementById("overlayPrice").textContent = "Precio: $" + product.price;
+      document.getElementById("productOverlay").style.display = "flex";
+    }
+
+    function closeOverlay() {
+      document.getElementById("productOverlay").style.display = "none";
+    }
+    </script>
+    </html>

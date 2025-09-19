@@ -75,17 +75,24 @@ async function loadCatalog(){
 loadCatalog()
 </script>
 
-    <!-- Overlay de producto -->
-    <div id="productOverlay" class="overlay">
-      <div class="overlay-content">
-        <span class="close-btn" onclick="closeOverlay()">&times;</span>
-        <img id="overlayImage" src="" alt="Producto">
-        <h2 id="overlayName"></h2>
-        <p id="overlayDescription"></p>
-        <p id="overlayPrice"></p>
+  <!-- Overlay de producto -->
+  <div id="productOverlay" class="overlay">
+    <div class="overlay-content">
+      <span class="close-btn" onclick="closeOverlay()">&times;</span>
+      
+      <!-- Carrusel -->
+      <div class="carousel">
+        <button class="prev-btn" onclick="changeSlide(-1)">&#10094;</button>
+        <div class="carousel-images" id="carouselImages"></div>
+        <button class="next-btn" onclick="changeSlide(1)">&#10095;</button>
       </div>
+  
+      <h2 id="overlayName"></h2>
+      <p id="overlayDescription"></p>
+      <p id="overlayPrice"></p>
     </div>
-    </body>
+  </div>
+</body>
 
     <script>
     function openOverlay(product) {

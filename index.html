@@ -89,7 +89,7 @@ loadCatalog()
 
     <script>
     function openOverlay(product) {
-      document.getElementById("overlayImage").src = product.image;
+      document.getElementById("overlayImage").src = "static/images/" + product.image;
       document.getElementById("overlayName").textContent = product.name;
       document.getElementById("overlayDescription").textContent = product.description;
       document.getElementById("overlayPrice").textContent = "Precio: $" + product.price;
